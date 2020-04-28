@@ -15,6 +15,5 @@ Install git client and cmake
 
 # Result
 
-For an unknown Image
 
 ![Unknown face detected and labeled accordingly](Result.png)
