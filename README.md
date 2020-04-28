@@ -17,5 +17,4 @@ Install git client and cmake
 
 For an unknown Image
 
-![Unknown face detected and labeled accordingly]
-(https://github.com/Abhishek-Gawande/Simple-Face-Recognition/blob/master/Result.png)
+![Unknown face detected and labeled accordingly](Result.png)
