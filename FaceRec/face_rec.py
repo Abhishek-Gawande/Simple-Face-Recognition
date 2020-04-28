@@ -8,10 +8,10 @@ UNKNOWN_FACES_DIR = 'unknown_faces'
 TOLERANCE = 0.5
 FRAME_THICKNESS = 3
 FONT_THICKNESS = 2
-MODEL = 'cnn'  # default: 'hog', other one can be 'cnn' - CUDA accelerated (if available) deep-learning pretrained model
+MODEL = 'cnn'  
 
 
-# Returns (R, G, B) from name
+# Returns different color for each known face
 def name_to_color(name):
     # Take 3 first letters, tolower()
     # lowercased character ord() value rage is 97 to 122, substract 97, multiply by 8
@@ -22,15 +22,15 @@ def name_to_color(name):
 print('Loading known faces...')
 known_faces = []
 known_names = []
-ct=0
+
 # We oranize known faces as subfolders of KNOWN_FACES_DIR
-# Each subfolder's name becomes our label (name)
+# Each subfolder's name becomes our label
 for name in os.listdir(KNOWN_FACES_DIR):
 
-    # Next we load every file of faces of known person
+   
     for filename in os.listdir(f'{KNOWN_FACES_DIR}/{name}'):
 
-        # Load an image
+       
         image = face_recognition.load_image_file(f'{KNOWN_FACES_DIR}/{name}/{filename}')
 
         # Get 128-dimension face encoding
@@ -43,10 +43,10 @@ for name in os.listdir(KNOWN_FACES_DIR):
 
 
 print('Processing unknown faces...')
-# Now let's loop over a folder of faces we want to label
+
 for filename in os.listdir(UNKNOWN_FACES_DIR):
 
-    # Load image
+    
     print(f'Filename {filename}', end='')
     image = face_recognition.load_image_file(f'{UNKNOWN_FACES_DIR}/{filename}')
 
@@ -57,20 +57,15 @@ for filename in os.listdir(UNKNOWN_FACES_DIR):
     # Without that it will search for faces once again slowing down whole process
     encodings = face_recognition.face_encodings(image, locations)
 
-    # We passed our image through face_locations and face_encodings, so we can modify it
-    # First we need to convert it from RGB to BGR as we are going to work with cv2
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
     # But this time we assume that there might be more faces in an image - we can find faces of dirrerent people
     print(f', found {len(encodings)} face(s)')
     for face_encoding, face_location in zip(encodings, locations):
 
-        # We use compare_faces (but might use face_distance as well)
-        # Returns array of True/False values in order of passed known_faces
         results = face_recognition.compare_faces(known_faces, face_encoding, TOLERANCE)
 
-        # Since order is being preserved, we check if any face was found then grab index
-        # then label (name) of first matching known face withing a tolerance
+
         match = None
         if True in results:  # If at least one is true, get a name of first of found labels
             match = known_names[results.index(True)]
@@ -80,10 +75,10 @@ for filename in os.listdir(UNKNOWN_FACES_DIR):
             top_left = (face_location[3], face_location[0])
             bottom_right = (face_location[1], face_location[2])
 
-            # Get color by name using our fancy function
+           
             color = name_to_color(match)
 
-            # Paint frame
+           
             cv2.rectangle(image, top_left, bottom_right, color, FRAME_THICKNESS)
 
             # Now we need smaller, filled grame below for a name
